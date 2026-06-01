@@ -1,12 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { tasks } from "@trigger.dev/sdk/v3"
-import { getCurrentProjectIdentity, getAccessibleProject } from "@/lib/project-access"
+import { getProjectById } from "@/lib/project-access"
 import type { generateSpec } from "@/trigger/generate-spec"
 
 export async function POST(request: Request) {
-  const identity = await getCurrentProjectIdentity()
-  if (!identity.userId) return Response.json({ error: "Unauthorized" }, { status: 401 })
-
   const body: unknown = await request.json().catch(() => ({}))
   const b = typeof body === "object" && body !== null ? (body as Record<string, unknown>) : {}
 
@@ -19,7 +16,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Missing roomId" }, { status: 400 })
   }
 
-  const project = await getAccessibleProject(roomId, identity)
+  const project = await getProjectById(roomId)
   if (!project) {
     return Response.json({ error: "Not found" }, { status: 404 })
   }
@@ -33,7 +30,7 @@ export async function POST(request: Request) {
   })
 
   await prisma.taskRun.create({
-    data: { runId: handle.id, projectId: project.id, userId: identity.userId },
+    data: { runId: handle.id, projectId: project.id },
   })
 
   return Response.json({ runId: handle.id }, { status: 201 })

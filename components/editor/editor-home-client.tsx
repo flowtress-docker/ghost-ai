@@ -9,11 +9,10 @@ import { Button } from "@/components/ui/button"
 import { useProjectActions, type ProjectRow } from "@/hooks/use-project-actions"
 
 interface EditorHomeClientProps {
-  ownedProjects: ProjectRow[]
-  sharedProjects: ProjectRow[]
+  projects: ProjectRow[]
 }
 
-export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeClientProps) {
+export function EditorHomeClient({ projects }: EditorHomeClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const actions = useProjectActions()
 
@@ -26,8 +25,7 @@ export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeCl
       <ProjectSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        ownedProjects={ownedProjects}
-        sharedProjects={sharedProjects}
+        projects={projects}
         onNewProject={actions.openCreate}
         onRename={actions.openRename}
         onDelete={actions.openDelete}

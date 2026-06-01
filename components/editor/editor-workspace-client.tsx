@@ -6,7 +6,6 @@ import { useCallback, useRef, useState } from "react"
 import { EditorNavbar } from "@/components/editor/editor-navbar"
 import type { SaveStatus } from "@/hooks/use-canvas-autosave"
 import { ProjectDialogs } from "@/components/editor/project-dialogs"
-import { ProjectShareDialog } from "@/components/editor/project-share-dialog"
 import { StarterTemplatesModal } from "@/components/editor/starter-templates-modal"
 import { ProjectSidebar } from "@/components/editor/project-sidebar"
 import { AiSidebar } from "@/components/editor/ai-sidebar"
@@ -16,20 +15,17 @@ import type { CanvasTemplate } from "@/components/editor/starter-templates"
 
 interface EditorWorkspaceClientProps {
   currentProject: ProjectRow
-  ownedProjects: ProjectRow[]
-  sharedProjects: ProjectRow[]
+  projects: ProjectRow[]
   roomId: string
 }
 
 export function EditorWorkspaceClient({
   currentProject,
-  ownedProjects,
-  sharedProjects,
+  projects,
   roomId,
 }: EditorWorkspaceClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [aiSidebarOpen, setAiSidebarOpen] = useState(true)
-  const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [templatesOpen, setTemplatesOpen] = useState(false)
   const [pendingTemplate, setPendingTemplate] = useState<CanvasTemplate | null>(null)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle")
@@ -37,7 +33,9 @@ export function EditorWorkspaceClient({
   const actions = useProjectActions()
 
   const handleSaveStatusChange = useCallback((status: SaveStatus) => setSaveStatus(status), [])
-  const handleSaveReady = useCallback((fn: () => void) => { saveFnRef.current = fn }, [])
+  const handleSaveReady = useCallback((fn: () => void) => {
+    saveFnRef.current = fn
+  }, [])
 
   return (
     <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
@@ -55,7 +53,6 @@ export function EditorWorkspaceClient({
             projectName={currentProject.name}
             isAiSidebarOpen={aiSidebarOpen}
             onToggleAiSidebar={() => setAiSidebarOpen((prev) => !prev)}
-            onOpenShareDialog={() => setShareDialogOpen(true)}
             onOpenTemplates={() => setTemplatesOpen(true)}
             saveStatus={saveStatus}
             onSave={() => saveFnRef.current()}
@@ -74,8 +71,7 @@ export function EditorWorkspaceClient({
           <ProjectSidebar
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
-            ownedProjects={ownedProjects}
-            sharedProjects={sharedProjects}
+            projects={projects}
             onNewProject={actions.openCreate}
             onRename={actions.openRename}
             onDelete={actions.openDelete}
@@ -90,11 +86,6 @@ export function EditorWorkspaceClient({
           />
 
           <ProjectDialogs {...actions} />
-          <ProjectShareDialog
-            projectId={currentProject.id}
-            open={shareDialogOpen}
-            onOpenChange={setShareDialogOpen}
-          />
           <StarterTemplatesModal
             open={templatesOpen}
             onOpenChange={setTemplatesOpen}

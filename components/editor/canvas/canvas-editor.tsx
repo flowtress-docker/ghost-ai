@@ -1,7 +1,6 @@
 "use client"
 
 import { useCallback, useEffect, useRef } from "react"
-import { useMyPresence } from "@liveblocks/react"
 import {
   ReactFlow,
   Background,
@@ -23,8 +22,6 @@ import { CanvasNodeComponent } from "@/components/editor/canvas/canvas-node"
 import { CanvasEdgeComponent } from "@/components/editor/canvas/canvas-edge"
 import { ShapePanel } from "@/components/editor/canvas/shape-panel"
 import { CanvasControls } from "@/components/editor/canvas/canvas-controls"
-import { PresenceCursors } from "@/components/editor/canvas/presence-cursors"
-import { CollaboratorAvatars } from "@/components/editor/canvas/collaborator-avatars"
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts"
 import type { CanvasTemplate } from "@/components/editor/starter-templates"
 import { useCanvasAutosave, type SaveStatus } from "@/hooks/use-canvas-autosave"
@@ -145,19 +142,6 @@ export function CanvasEditor({ projectId, pendingTemplate, onTemplateImported, o
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [onDelete])
 
-  const [, updateMyPresence] = useMyPresence()
-
-  const onMouseMove = useCallback(
-    (event: React.MouseEvent) => {
-      updateMyPresence({ cursor: screenToFlowPosition({ x: event.clientX, y: event.clientY }) })
-    },
-    [screenToFlowPosition, updateMyPresence]
-  )
-
-  const onMouseLeave = useCallback(() => {
-    updateMyPresence({ cursor: null })
-  }, [updateMyPresence])
-
   const undo = useUndo()
   const redo = useRedo()
   const canUndo = useCanUndo()
@@ -238,8 +222,6 @@ export function CanvasEditor({ projectId, pendingTemplate, onTemplateImported, o
       className="relative h-full w-full"
       onDragOver={onDragOver}
       onDrop={onDrop}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
     >
       <ReactFlow
         nodes={nodes}
@@ -271,8 +253,6 @@ export function CanvasEditor({ projectId, pendingTemplate, onTemplateImported, o
         canRedo={canRedo}
       />
       <ShapePanel />
-      <PresenceCursors />
-      <CollaboratorAvatars />
       <SaveStatusIndicator status={saveStatus} />
     </div>
   )

@@ -156,7 +156,7 @@ type ToolCall = { toolName: ToolName; input: Record<string, unknown> };
 export const designAgent = task({
   id: "design-agent",
   retry: { maxAttempts: 2 },
-  run: async (payload: { prompt: string; roomId: string; userId: string }) => {
+  run: async (payload: { prompt: string; roomId: string }) => {
     const lb = getLiveblocks();
     const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
 

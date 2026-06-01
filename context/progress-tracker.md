@@ -3,13 +3,14 @@
 Update this file whenever the current phase, active feature, or implementation state changes.
 
 ## Current Phase
-- Feature 28 (Spec Persistence & Download) — complete
+- Internal solo tool simplification — complete
 
 ## Current Goal
 - Feature 29 (TBD)
 
 ## Completed
 
+- Internal solo tool: Removed Clerk and all application auth. Dropped `Project.ownerId`, `ProjectCollaborator`, and `TaskRun.userId` (migration `20260601120000_remove_auth_ownership`). Flat project list in sidebar; removed share dialog, collaborator APIs, sign-in/up routes, human presence UI, and `UserButton`. `proxy.ts` is a no-op. Liveblocks auth uses fixed `local-user` when project exists. `CONTEXT.md` documents internal-tool domain language. `npm run build` passes.
 - Feature 01: Design System — shadcn/ui installed and configured for Tailwind v4, dark-only theme tokens in globals.css, Button/Card/Dialog/Input/Tabs/Textarea/ScrollArea components added to components/ui/, lucide-react installed, lib/utils.ts cn() helper in place. TypeScript compiles clean.
 - Feature 02: Editor Chrome — EditorNavbar (fixed top bar with PanelLeftOpen/PanelLeftClose toggle) and ProjectSidebar (fixed overlay, slides from left, Projects title + close button, My Projects/Shared tabs with empty states, New Project button) added to components/editor/. Dialog pattern confirmed ready via existing components/ui/dialog.tsx. TypeScript and ESLint clean.
 - Feature 03: Auth — @clerk/ui installed. ClerkProvider wraps root layout with dark theme from @clerk/ui/themes, overriding appearance variables using CSS tokens (no hardcoded colors). proxy.ts at project root uses clerkMiddleware + createRouteMatcher to protect all routes except /sign-in and /sign-up (resolved from NEXT_PUBLIC_CLERK_SIGN_IN_URL / NEXT_PUBLIC_CLERK_SIGN_UP_URL env vars). Sign-in and sign-up pages use a minimal two-panel layout (left panel with logo/tagline/feature list hidden on mobile, right panel with centered Clerk form). app/page.tsx redirects authenticated users to /editor and unauthenticated users to /sign-in. UserButton added to EditorNavbar right section. app/editor/page.tsx shell created with sidebar state management.
@@ -66,7 +67,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Using Next.js 16.2.4 with React 19 and Tailwind CSS v4.
 - shadcn version 4.5.0 was used; it auto-detected Tailwind v4.
 - lucide-react ^1.11.0 installed as a direct dependency.
-- @clerk/nextjs ^7.2.7 and @clerk/ui ^1.6.7 installed.
+- Clerk removed — internal tool has no application auth.
 - @liveblocks/node installed alongside existing @liveblocks/client, @liveblocks/react, @liveblocks/react-flow, @liveblocks/react-ui. Liveblocks client uses lazy init (getLiveblocks()) to avoid key validation errors at build time.
 - @vercel/blob ^2.3.3 installed. BLOB_READ_WRITE_TOKEN set in .env.local.
 - @trigger.dev/sdk ^4.4.4 installed. trigger.config.ts reads project ref from TRIGGER_PROJECT_REF env var. TRIGGER_SECRET_KEY must be set in .env.local for triggering tasks from server code. Run `npx trigger.dev@latest dev` for local development; deploy with `npx trigger.dev@latest deploy`.

@@ -6,7 +6,7 @@
 | ---------------- | ----------------------- | -------------------------------------------------------------- |
 | Framework        | Next.js 16 + TypeScript | Full-stack app with server/client boundaries                   |
 | UI               | Tailwind + shadcn/ui    | Component composition and styling                              |
-| Auth             | Clerk                   | User identity and route protection                             |
+| Auth             | None                    | Internal tool; network trust only                              |
 | Database         | Prisma + PostgreSQL     | Relational metadata: projects, collaborators, specs, task runs |
 | Canvas           | Liveblocks + React Flow | Real-time collaborative canvas, presence, and cursors          |
 | Background tasks | Trigger.dev             | Durable AI generation workflows                                |
@@ -29,13 +29,12 @@
 - Canvas content and Markdown output are stored in and retrieved from Vercel Blob.
 - The blob URL is stored in the database (`canvasJsonPath`, `filePath`) as the reference to the artifact.
 
-## Auth and Collaboration Model
+## Access Model
 
-- Every project has a single owner (Clerk user ID).
-- Projects can include additional collaborators.
-- Only authenticated users can access protected routes.
-- Only the owner or a collaborator can mutate project resources.
-- Liveblocks room tokens are issued only after verifying project membership.
+- No application-level authentication or authorization.
+- All projects are visible and editable in a flat workspace.
+- Liveblocks room tokens are issued when the project exists (solo internal use).
+- Deploy behind a trusted network or access control at the infrastructure layer.
 
 ## Starter System Designs
 

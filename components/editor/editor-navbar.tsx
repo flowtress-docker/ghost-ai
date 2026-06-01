@@ -1,7 +1,6 @@
 "use client"
 
-import { LayoutTemplate, PanelLeftClose, PanelLeftOpen, Save, Share2, Sparkles } from "lucide-react"
-import { UserButton } from "@clerk/nextjs"
+import { LayoutTemplate, PanelLeftClose, PanelLeftOpen, Save, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { SaveStatus } from "@/hooks/use-canvas-autosave"
 
@@ -11,7 +10,6 @@ interface EditorNavbarProps {
   projectName?: string
   isAiSidebarOpen?: boolean
   onToggleAiSidebar?: () => void
-  onOpenShareDialog?: () => void
   onOpenTemplates?: () => void
   saveStatus?: SaveStatus
   onSave?: () => void
@@ -23,7 +21,6 @@ export function EditorNavbar({
   projectName,
   isAiSidebarOpen = false,
   onToggleAiSidebar,
-  onOpenShareDialog,
   onOpenTemplates,
   saveStatus,
   onSave,
@@ -63,32 +60,16 @@ export function EditorNavbar({
                 {saveStatus === "saving"
                   ? "Saving..."
                   : saveStatus === "saved"
-                  ? "Saved"
-                  : saveStatus === "error"
-                  ? "Error"
-                  : "Save"}
+                    ? "Saved"
+                    : saveStatus === "error"
+                      ? "Error"
+                      : "Save"}
               </Button>
             ) : null}
             {onOpenTemplates ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={onOpenTemplates}
-              >
+              <Button variant="outline" size="sm" className="gap-2" onClick={onOpenTemplates}>
                 <LayoutTemplate className="h-4 w-4" />
                 Templates
-              </Button>
-            ) : null}
-            {onOpenShareDialog ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={onOpenShareDialog}
-              >
-                <Share2 className="h-4 w-4" />
-                Share
               </Button>
             ) : null}
             <Button
@@ -102,8 +83,6 @@ export function EditorNavbar({
             </Button>
           </>
         ) : null}
-
-        {!onToggleAiSidebar ? <UserButton /> : null}
       </div>
     </header>
   )

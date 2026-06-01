@@ -30,7 +30,7 @@
 ## API Routes
 
 - Validate and parse request input before any logic runs.
-- Enforce auth and project ownership checks before any mutation.
+- Verify the target project exists before mutations that scope to a project.
 - Return consistent, predictable response shapes.
 - Keep route handlers thin — push complexity into shared modules or background tasks.
 
@@ -39,7 +39,7 @@
 - Project metadata and relationships belong in PostgreSQL via Prisma.
 - Canvas snapshots and generated specs belong in Vercel Blob; Prisma stores only the blob URL reference.
 - Do not store large generated content directly in the database.
-- Task run records are first-class relational data — treat ownership and run IDs as verified before any token issuance.
+- Task run records are first-class relational data — verify run IDs exist and match the project before token issuance.
 
 ## File Organization
 
