@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { getUserById } from "@/lib/auth/users";
 import { getLiveblocks, getUserColor } from "@/lib/liveblocks";
 import {
   getCurrentProjectIdentity,
@@ -28,12 +28,9 @@ export async function POST(request: Request) {
 
   await lb.getOrCreateRoom(room, { defaultAccesses: [] });
 
-  const user = await currentUser();
-  const name =
-    user?.fullName ??
-    user?.primaryEmailAddress?.emailAddress ??
-    "Anonymous";
-  const avatar = user?.imageUrl ?? "";
+  const user = await getUserById(identity.userId);
+  const name = user?.name ?? user?.email ?? "Anonymous";
+  const avatar = user?.avatarUrl ?? "";
   const color = getUserColor(identity.userId);
 
   const session = lb.prepareSession(identity.userId, {

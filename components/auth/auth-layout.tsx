@@ -1,5 +1,5 @@
-import { SignUp } from "@clerk/nextjs"
 import { BrainCircuit, Share2, ScrollText } from "lucide-react"
+import type { ReactNode } from "react"
 
 const features = [
   {
@@ -22,7 +22,15 @@ const features = [
   },
 ]
 
-export default function SignUpPage() {
+export function AuthLayout({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string
+  subtitle: string
+  children: ReactNode
+}) {
   return (
     <main className="min-h-screen flex">
       <div className="hidden lg:flex w-1/2 flex-col bg-bg-surface border-r border-border-default">
@@ -54,14 +62,14 @@ export default function SignUpPage() {
           </p>
 
           <ul className="space-y-7">
-            {features.map(({ icon: Icon, title, description }) => (
-              <li key={title} className="flex items-start gap-4">
+            {features.map(({ icon: Icon, title: featureTitle, description }) => (
+              <li key={featureTitle} className="flex items-start gap-4">
                 <div className="shrink-0 h-10 w-10 rounded-xl bg-accent-primary-dim flex items-center justify-center">
                   <Icon className="h-5 w-5 text-accent-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-text-primary leading-snug">
-                    {title}
+                    {featureTitle}
                   </p>
                   <p className="text-sm text-text-muted mt-1 leading-snug">
                     {description}
@@ -80,7 +88,20 @@ export default function SignUpPage() {
       </div>
 
       <div className="flex flex-1 lg:w-1/2 items-center justify-center p-8 bg-bg-base">
-        <SignUp />
+        <div className="w-full max-w-sm">
+          <div className="mb-8 lg:hidden text-center">
+            <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary">
+              <span className="text-bg-base font-bold text-sm">G</span>
+            </div>
+            <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
+            <p className="mt-1 text-sm text-text-muted">{subtitle}</p>
+          </div>
+          <div className="hidden lg:block mb-8">
+            <h2 className="text-2xl font-semibold text-text-primary">{title}</h2>
+            <p className="mt-1 text-sm text-text-muted">{subtitle}</p>
+          </div>
+          {children}
+        </div>
       </div>
     </main>
   )
