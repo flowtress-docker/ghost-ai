@@ -75,3 +75,5 @@ Create accounts at `/sign-up`. Works without Liveblocks, Trigger.dev, or Gemini 
 - Run `npx prisma migrate deploy` after Postgres start on a fresh VM.
 - Canvas autosave writes to `data/canvas/{projectId}.json` (no cloud storage).
 - Long-running dev servers: tmux session `next-dev-server`.
+- **Ghost AI (dev):** `/api/ai/design` runs inline via `after()` when `NODE_ENV=development` and `TRIGGER_DEV_WORKER` is not `true`. If all Gemini models are at capacity, the sidebar shows a specific busy message — wait ~1 minute and retry. Optional override: set `GEMINI_MODEL` in secrets.
+- **Ghost AI canvas writes:** Server-side design agent uses plain JSON nodes in Liveblocks storage. Rooms created only on the server need `ensureCanvasRoom()` (initializes `flow.nodes` / `flow.edges`). Legacy AI nodes written before this fix may cause `node.setLocal is not a function` in the browser — clear the canvas or use a fresh project room.
