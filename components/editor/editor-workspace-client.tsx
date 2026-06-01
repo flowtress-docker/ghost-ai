@@ -11,6 +11,8 @@ import { StarterTemplatesModal } from "@/components/editor/starter-templates-mod
 import { ProjectSidebar } from "@/components/editor/project-sidebar"
 import { AiSidebar } from "@/components/editor/ai-sidebar"
 import { CanvasRoom } from "@/components/editor/canvas/canvas-room"
+import { LiveblocksConnectionStatus } from "@/components/editor/liveblocks-connection-status"
+import { liveblocksAuthEndpoint } from "@/lib/liveblocks/auth-endpoint"
 import { useProjectActions, type ProjectRow } from "@/hooks/use-project-actions"
 import type { CanvasTemplate } from "@/components/editor/starter-templates"
 
@@ -40,7 +42,7 @@ export function EditorWorkspaceClient({
   const handleSaveReady = useCallback((fn: () => void) => { saveFnRef.current = fn }, [])
 
   return (
-    <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
+    <LiveblocksProvider authEndpoint={liveblocksAuthEndpoint}>
       <RoomProvider
         id={roomId}
         initialPresence={{ cursor: null, thinking: false }}
@@ -62,6 +64,7 @@ export function EditorWorkspaceClient({
           />
 
           <main className="relative min-h-0 flex-1 overflow-hidden">
+            <LiveblocksConnectionStatus />
             <CanvasRoom
               projectId={currentProject.id}
               pendingTemplate={pendingTemplate}

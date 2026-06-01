@@ -4,6 +4,7 @@ import {
   getLiveblocksConfigError,
   getUserColor,
 } from "@/lib/liveblocks";
+import { ensureNormalizedCanvasRoom } from "@/lib/liveblocks/ensure-canvas-room";
 import {
   getCurrentProjectIdentity,
   userHasProjectAccess,
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
   try {
     const lb = getLiveblocks();
 
-    await lb.getOrCreateRoom(room, { defaultAccesses: [] });
+    await ensureNormalizedCanvasRoom(lb, room);
 
     const user = await getUserById(identity.userId);
     const name = user?.name ?? user?.email ?? "Anonymous";

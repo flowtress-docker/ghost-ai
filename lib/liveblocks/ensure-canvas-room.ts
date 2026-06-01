@@ -1,5 +1,9 @@
 import { LiveMap, LiveObject, toPlainLson, type PlainLsonObject } from "@liveblocks/client";
 import { LiveblocksError, type Liveblocks } from "@liveblocks/node";
+import { normalizeFlowStorageMaps } from "@/lib/liveblocks/canvas-flow-sync";
+
+const CANVAS_FORMAT_KEY = "canvasFormat";
+const CANVAS_FORMAT_VALUE = "react-flow-sync";
 
 function emptyCanvasStorage(): PlainLsonObject {
   return toPlainLson(
@@ -32,4 +36,30 @@ export async function ensureCanvasRoom(lb: Liveblocks, roomId: string): Promise<
     }
     throw error;
   }
+}
+
+/**
+ * Prepare canvas storage before the browser opens a WebSocket.
+ * Normalizing while connected causes code 1006 reconnects; doing it here avoids that.
+ */
+export async function ensureNormalizedCanvasRoom(lb: Liveblocks, roomId: string): Promise<void> {
+  await ensureCanvasRoom(lb, roomId);
+
+  const room = await lb.getRoom(roomId);
+  if (room.metadata?.[CANVAS_FORMAT_KEY] === CANVAS_FORMAT_VALUE) {
+    return;
+  }
+
+  await lb.mutateStorage(roomId, ({ root }) => {
+    const flow = root.get("flow");
+    if (!flow) return;
+    normalizeFlowStorageMaps(flow.get("nodes"), flow.get("edges"));
+  });
+
+  await lb.updateRoom(roomId, {
+    metadata: {
+      ...room.metadata,
+      [CANVAS_FORMAT_KEY]: CANVAS_FORMAT_VALUE,
+    },
+  });
 }

@@ -28,7 +28,6 @@ import { CollaboratorAvatars } from "@/components/editor/canvas/collaborator-ava
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts"
 import type { CanvasTemplate } from "@/components/editor/starter-templates"
 import { useCanvasAutosave, type SaveStatus } from "@/hooks/use-canvas-autosave"
-import { useNormalizeCanvasFlowStorage } from "@/hooks/use-normalize-canvas-flow"
 
 const nodeTypes = { canvasNode: CanvasNodeComponent }
 const edgeTypes = { canvasEdge: CanvasEdgeComponent }
