@@ -30,3 +30,15 @@ _Avoid_: ownerId, invite, share by email, access control list
 **Solo team**:
 The expected usage pattern: one person (or one person at a time) drives the app. Human-to-human presence is optional, not a core feature.
 _Avoid_: Team collaboration, multiplayer (as a product promise)
+
+**Simplicity**:
+Prefer the smallest surface area: fewer models, fewer routes, no identity or access-control concepts unless strictly required for canvas or AI behavior.
+_Avoid_: Enterprise patterns, sharing flows, profile menus
+
+**Ghost AI** (agent):
+The only non-human actor on the canvas. Shows activity (e.g. thinking state) while generating designs; not a logged-in user.
+_Avoid_: Bot user, AI collaborator account
+
+**Human presence**:
+Not a product feature. No live cursors, avatar stacks, or display-name prompts for people.
+_Avoid_: Participant, collaborator avatars, multiplayer presence
