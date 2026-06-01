@@ -42,7 +42,7 @@ This skill covers two areas:
 
 ## Appearance Customization
 
-Appearance customization applies to both Core 2 and current SDK.
+Appearance customization applies to both Core 2 and the current SDK.
 
 ### Component Customization Options
 

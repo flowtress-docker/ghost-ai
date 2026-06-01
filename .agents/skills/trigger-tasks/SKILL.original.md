@@ -17,10 +17,10 @@ Build durable background tasks that run reliably with automatic retries, queuing
 
 ## Critical Rules
 
-1. **Always use`@trigger.dev/sdk`** — never use deprecated`client.defineJob`
-2. **Check`result.ok`** before accessing`result.output` from`triggerAndWait()`
-3. **Never use`Promise.all`** with`triggerAndWait()` or`wait.*` calls
-4. **Export tasks** from files in your`trigger/` directory
+1. **Always use `@trigger.dev/sdk`** — never use deprecated `client.defineJob`
+2. **Check `result.ok`** before accessing `result.output` from `triggerAndWait()`
+3. **Never use `Promise.all`** with `triggerAndWait()` or `wait.*` calls
+4. **Export tasks** from files in your `trigger/` directory
 
 ## Basic Task
 
@@ -172,7 +172,7 @@ await childTask.trigger(payload, {
 
 ## Debouncing
 
-Consolidate rapid triggers into single execution:
+Consolidate rapid triggers into a single execution:
 
 ```ts
 await myTask.trigger(
@@ -325,15 +325,15 @@ export const heavyTask = task({
 });
 ```
 
-||Preset|vCPU|RAM||
-||--------|------|-----||
-||micro|0.25|0.25 GB||
-||small-1x|0.5|0.5 GB (default)||
-||small-2x|1|1 GB||
-||medium-1x|1|2 GB||
-||medium-2x|2|4 GB||
-||large-1x|4|8 GB||
-||large-2x|8|16 GB||
+| Preset | vCPU | RAM |
+|--------|------|-----|
+| micro | 0.25 | 0.25 GB |
+| small-1x | 0.5 | 0.5 GB (default) |
+| small-2x | 1 | 1 GB |
+| medium-1x | 1 | 2 GB |
+| medium-2x | 2 | 4 GB |
+| large-1x | 4 | 8 GB |
+| large-2x | 8 | 16 GB |
 
 ## Best Practices
 
@@ -344,4 +344,4 @@ export const heavyTask = task({
 5. **Use debouncing** for user activity and webhook bursts
 6. **Match machine size** to computational requirements
 
-See`references/` for detailed documentation on each feature.
+See `references/` for detailed documentation on each feature.

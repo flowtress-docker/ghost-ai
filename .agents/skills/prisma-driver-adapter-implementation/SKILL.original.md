@@ -9,7 +9,7 @@ metadata:
 
 # Prisma 7 Driver Adapter Implementation Guide
 
-This skill provides everything needed to add Prisma ORM v7 driver adapter for any database.
+This skill provides everything needed to implement a Prisma ORM v7 driver adapter for any database.
 
 ## Architecture Overview
 
@@ -50,7 +50,7 @@ This skill provides everything needed to add Prisma ORM v7 driver adapter for an
 
 ## Required Interfaces
 
-Import from`@prisma/driver-adapter-utils`:
+Import from `@prisma/driver-adapter-utils`:
 
 ```typescript
 import type {
@@ -228,7 +228,7 @@ class MyQueryable<TClient> implements SqlQueryable {
 
 ### Step 2: Create the Transaction class
 
-**Critical**:`commit()` and`rollback()` are **lifecycle hooks only**. They must NOT issue SQL. Prisma sends`COMMIT`/`ROLLBACK` via`executeRaw` on transaction object.
+**Critical**: `commit()` and `rollback()` are **lifecycle hooks only**. They must NOT issue SQL. Prisma sends `COMMIT`/`ROLLBACK` via `executeRaw` on the transaction object.
 
 ```typescript
 class MyTransaction extends MyQueryable<TClient> implements Transaction {
@@ -443,7 +443,7 @@ function mapRow(row: unknown[], columnTypes: ColumnType[]): ResultValue[] {
 
 ### Column Type Inference
 
-When driver doesn't provide type metadata, infer from JS values:
+When the driver doesn't provide type metadata, infer from JS values:
 
 ```typescript
 function inferColumnType(value: NonNullable<unknown>): ColumnType {
@@ -460,7 +460,7 @@ function inferColumnType(value: NonNullable<unknown>): ColumnType {
 
 ## Error Handling
 
-Map driver errors to`MappedError` for Prisma to handle correctly:
+Map driver errors to `MappedError` for Prisma to handle correctly:
 
 ```typescript
 function convertDriverError(error: unknown): MappedError {
@@ -513,31 +513,31 @@ function convertDriverError(error: unknown): MappedError {
 
 ### SQLite
 
-- Set`safeIntegers: true` when opening database to get`bigint` for large integers
-- Only`SERIALIZABLE` isolation level is valid
-- `executeScript`: split on`;` and run each statement individually
+- Set `safeIntegers: true` when opening the database to get `bigint` for large integers
+- Only `SERIALIZABLE` isolation level is valid
+- `executeScript`: split on `;` and run each statement individually
 - Boolean values: store as 0/1, return as boolean
 
 ### PostgreSQL
 
 - All standard isolation levels are valid
-- For connection pooling (PgBouncer), use`prepare: false`
-- Transactions require dedicated connection (`reserve()` pattern)
+- For connection pooling (PgBouncer), use `prepare: false`
+- Transactions require a dedicated connection (`reserve()` pattern)
 - `executeScript`: use multi-statement execution (`.simple()` in some drivers)
 - `int8` columns may return as string (already stringified by driver)
 - `numeric` columns return as string to preserve precision
 
 ### MySQL/MariaDB
 
-- Supports`READ UNCOMMITTED`,`READ COMMITTED`,`REPEATABLE READ`,`SERIALIZABLE`
-- Use`?` placeholders for parameters
-- Handle`BIGINT` as string for large values
+- Supports `READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`
+- Use `?` placeholders for parameters
+- Handle `BIGINT` as string for large values
 
 ## Testing Strategy
 
 ### Unit Tests (no PrismaClient)
 
-Test adapter directly with raw database driver:
+Test the adapter directly with the raw database driver:
 
 ```typescript
 describe("queryRaw", () => {
@@ -572,7 +572,7 @@ describe("startTransaction", () => {
 
 ### E2E Tests (with PrismaClient)
 
-Test full integration:
+Test the full integration:
 
 ```typescript
 describe("E2E", () => {
@@ -622,17 +622,17 @@ const users = await prisma.user.findMany();
 
 ## Checklist
 
-Before considering adapter complete:
+Before considering the adapter complete:
 
-- [ ]`SqlMigrationAwareDriverAdapterFactory` implemented with`connect()` and`connectToShadowDb()`
-- [ ]`SqlDriverAdapter` implements`queryRaw`,`executeRaw`,`executeScript`,`startTransaction`,`dispose`
-- [ ]`Transaction` implements`queryRaw`,`executeRaw`,`commit`,`rollback` with`options: { usePhantomQuery: false }`
-- [ ]`commit()` and`rollback()` are lifecycle hooks only (no SQL issued)
-- [ ]`startTransaction` issues`BEGIN` (depth 1) or`SAVEPOINT sp_N` (nested)
+- [ ] `SqlMigrationAwareDriverAdapterFactory` implemented with `connect()` and `connectToShadowDb()`
+- [ ] `SqlDriverAdapter` implements `queryRaw`, `executeRaw`, `executeScript`, `startTransaction`, `dispose`
+- [ ] `Transaction` implements `queryRaw`, `executeRaw`, `commit`, `rollback` with `options: { usePhantomQuery: false }`
+- [ ] `commit()` and `rollback()` are lifecycle hooks only (no SQL issued)
+- [ ] `startTransaction` issues `BEGIN` (depth 1) or `SAVEPOINT sp_N` (nested)
 - [ ] Argument mapping handles: string→int, string→bigint, string→float, base64→bytes
 - [ ] Row mapping handles: bigint→string, Date→ISO string, JSON→string
-- [ ] Column types correctly mapped to`ColumnTypeEnum`
-- [ ] Errors wrapped in`DriverAdapterError` with proper`MappedError` kind
-- [ ] Isolation level validation for target database
+- [ ] Column types correctly mapped to `ColumnTypeEnum`
+- [ ] Errors wrapped in `DriverAdapterError` with proper `MappedError` kind
+- [ ] Isolation level validation for the target database
 - [ ] Unit tests pass for queryRaw, executeRaw, executeScript, transactions
 - [ ] E2E tests pass with real PrismaClient

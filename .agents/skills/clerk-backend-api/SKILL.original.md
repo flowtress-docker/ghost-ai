@@ -1,6 +1,6 @@
 ---
 name: clerk-backend-api
-description: "Clerk Backend REST API explorer + executor. Browse tags, inspect endpoint schemas, execute auth requests. Use when listing users, managing orgs, or calling Clerk API endpoints."
+description: "Clerk Backend REST API explorer and executor. Browse tags, inspect endpoint schemas, and execute authenticated requests. Use when listing users, managing organizations, or calling any Clerk API endpoint."
 allowed-tools: Bash, Read, Grep, Skill, WebFetch
 license: MIT
 metadata:

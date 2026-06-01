@@ -14,7 +14,7 @@ Complete reference for all Prisma CLI commands. This skill provides guidance on 
 ## When to Apply
 
 Reference this skill when:
-- Setting up new Prisma project (`prisma init`)
+- Setting up a new Prisma project (`prisma init`)
 - Generating Prisma Client (`prisma generate`)
 - Running database migrations (`prisma migrate`)
 - Managing database state (`prisma db push/pull`)
@@ -23,26 +23,26 @@ Reference this skill when:
 
 ## Rule Categories by Priority
 
-||Priority|Category|Impact|Prefix||
-||----------|----------|--------|--------||
-||1|Setup|HIGH||`init`|||
-||2|Generation|HIGH||`generate`|||
-||3|Development|HIGH||`dev`|||
-||4|Database|HIGH||`db-`|||
-||5|Migrations|CRITICAL||`migrate-`|||
-||6|Utility|MEDIUM||`studio`,`validate`,`format`,`debug`,`mcp`|||
+| Priority | Category | Impact | Prefix |
+|----------|----------|--------|--------|
+| 1 | Setup | HIGH | `init` |
+| 2 | Generation | HIGH | `generate` |
+| 3 | Development | HIGH | `dev` |
+| 4 | Database | HIGH | `db-` |
+| 5 | Migrations | CRITICAL | `migrate-` |
+| 6 | Utility | MEDIUM | `studio`, `validate`, `format`, `debug`, `mcp` |
 
 ## Command Categories
 
-||Category|Commands|Purpose||
-||----------|----------|---------||
-||Setup||`init`||Bootstrap new Prisma project||
-||Generation||`generate`||Generate Prisma Client||
-||Validation||`validate`,`format`||Schema validation and formatting||
-||Development||`dev`||Local Prisma Postgres for development||
-||Database||`db pull`,`db push`,`db seed`,`db execute`||Direct database operations||
-||Migrations||`migrate dev`,`migrate deploy`,`migrate reset`,`migrate status`,`migrate diff`,`migrate resolve`||Schema migrations||
-||Utility||`studio`,`mcp`,`version`,`debug`||Development and AI tooling||
+| Category | Commands | Purpose |
+|----------|----------|---------|
+| Setup | `init` | Bootstrap new Prisma project |
+| Generation | `generate` | Generate Prisma Client |
+| Validation | `validate`, `format` | Schema validation and formatting |
+| Development | `dev` | Local Prisma Postgres for development |
+| Database | `db pull`, `db push`, `db seed`, `db execute` | Direct database operations |
+| Migrations | `migrate dev`, `migrate deploy`, `migrate reset`, `migrate status`, `migrate diff`, `migrate resolve` | Schema migrations |
+| Utility | `studio`, `mcp`, `version`, `debug` | Development and AI tooling |
 
 ## Quick Reference
 
@@ -79,7 +79,7 @@ prisma generate --generator client
 
 ### Bun Runtime
 
-When using Bun, always add`--bun` flag so Prisma runs with Bun runtime (otherwise it falls back to Node.js because of CLI shebang):
+When using Bun, always add the `--bun` flag so Prisma runs with the Bun runtime (otherwise it falls back to Node.js because of the CLI shebang):
 
 ```bash
 bunx --bun prisma init
@@ -180,7 +180,7 @@ prisma format
 
 ### New Configuration File
 
-Use`prisma.config.ts` for CLI configuration:
+Use `prisma.config.ts` for CLI configuration:
 
 ```typescript
 import 'dotenv/config'
@@ -200,13 +200,13 @@ export default defineConfig({
 
 ### Current Command Behavior
 
-- Run`prisma generate` explicitly after`migrate dev`,`db push`, or other schema syncs when you need fresh client output
-- Run`prisma db seed` explicitly after`migrate dev` or`migrate reset` when you need seed data
-- Use`prisma db execute --file ...` for raw SQL scripts
+- Run `prisma generate` explicitly after `migrate dev`, `db push`, or other schema syncs when you need fresh client output
+- Run `prisma db seed` explicitly after `migrate dev` or `migrate reset` when you need seed data
+- Use `prisma db execute --file ...` for raw SQL scripts
 
 ### Environment Variables
 
-Load environment variables explicitly in`prisma.config.ts`, commonly with`dotenv`:
+Load environment variables explicitly in `prisma.config.ts`, commonly with `dotenv`:
 
 ```typescript
 // prisma.config.ts
@@ -240,4 +240,4 @@ references/debug.md          - Debug info
 
 ## How to Use
 
-Use command categories above for navigation, then open specific command reference file you need.
+Use the command categories above for navigation, then open the specific command reference file you need.

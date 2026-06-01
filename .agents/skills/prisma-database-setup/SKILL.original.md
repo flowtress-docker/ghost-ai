@@ -14,7 +14,7 @@ Comprehensive guides for configuring Prisma ORM with various database providers.
 ## When to Apply
 
 Reference this skill when:
-- Initializing new Prisma project
+- Initializing a new Prisma project
 - Switching database providers
 - Configuring connection strings and environment variables
 - Troubleshooting database connection issues
@@ -52,7 +52,7 @@ If you're using Bun, run Prisma CLI commands with `bunx --bun prisma ...` so Pri
 
 ## Configuration Files
 
-Your configuration shape depends on provider and Prisma major version:
+Your configuration shape depends on the provider and Prisma major version:
 
 1. **All providers** use **`prisma/schema.prisma`**.
 2. **Prisma 7 SQL setups** typically use **`prisma.config.ts`** for datasource URLs.

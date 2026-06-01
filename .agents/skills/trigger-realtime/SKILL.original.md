@@ -11,7 +11,7 @@ Subscribe to task runs and stream data in real-time from frontend and backend.
 
 - Building progress indicators for long-running tasks
 - Creating live dashboards showing task status
-- Streaming AI/LLM responses to UI
+- Streaming AI/LLM responses to the UI
 - React components that trigger and monitor tasks
 - Waiting for user approval in tasks
 
@@ -267,15 +267,15 @@ function ApprovalButton({ tokenId, accessToken }: { tokenId: string; accessToken
 
 ## Run Object Properties
 
-||Property|Description||
-||----------|-------------||
-|||`id`||Unique run identifier||
-|||`status`|||`QUEUED`,`EXECUTING`,`COMPLETED`,`FAILED`,`CANCELED`|||
-|||`payload`||Task input (typed)||
-|||`output`||Task result (typed, when completed)||
-|||`metadata`||Real-time updatable data||
-|||`createdAt`||Start timestamp||
-|||`costInCents`||Execution cost||
+| Property | Description |
+|----------|-------------|
+| `id` | Unique run identifier |
+| `status` | `QUEUED`, `EXECUTING`, `COMPLETED`, `FAILED`, `CANCELED` |
+| `payload` | Task input (typed) |
+| `output` | Task result (typed, when completed) |
+| `metadata` | Real-time updatable data |
+| `createdAt` | Start timestamp |
+| `costInCents` | Execution cost |
 
 ## Best Practices
 
@@ -283,6 +283,6 @@ function ApprovalButton({ tokenId, accessToken }: { tokenId: string; accessToken
 2. **Set expiration times** — don't use long-lived tokens
 3. **Use typed hooks** — pass task types for proper inference
 4. **Handle errors** — always check for errors in hooks
-5. **Throttle streams** — use`throttleInMs` to control re-renders
+5. **Throttle streams** — use `throttleInMs` to control re-renders
 
-See`references/realtime.md` for complete documentation.
+See `references/realtime.md` for complete documentation.

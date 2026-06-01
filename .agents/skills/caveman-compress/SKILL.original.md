@@ -1,7 +1,6 @@
 ---
 name: caveman-compress
 description: >
-  
   Compress natural language memory files (CLAUDE.md, todos, preferences) into caveman format
   to save input tokens. Preserves all technical substance, code, URLs, and structure.
   Compressed version overwrites the original file. Human-readable backup saved as FILE.original.md.
@@ -110,4 +109,3 @@ Compressed:
 - If unsure whether something is code or prose, leave it unchanged
 - Original file is backed up as FILE.original.md before overwriting
 - Never compress FILE.original.md (skip it)
-

@@ -65,7 +65,7 @@ export const translateCopy = task({
 
 ### 2. Routing (Classify → Dispatch)
 
-Use cheap model to classify, then route to appropriate handler.
+Use a cheap model to classify, then route to appropriate handler.
 
 ```typescript
 import { task } from "@trigger.dev/sdk";
@@ -112,7 +112,7 @@ export const routeQuestion = task({
 
 ### 3. Parallelization
 
-Run independent LLM calls simultaneously with`batch.triggerByTaskAndWait`.
+Run independent LLM calls simultaneously with `batch.triggerByTaskAndWait`.
 
 ```typescript
 import { batch, task } from "@trigger.dev/sdk";
@@ -140,7 +140,7 @@ export const analyzeContent = task({
 });
 ```
 
-**See:**`references/orchestration.md` for advanced patterns
+**See:** `references/orchestration.md` for advanced patterns
 
 ---
 
@@ -229,12 +229,12 @@ export const refineTranslation = task({
 
 ## Trigger-Specific Features
 
-||Feature|What it enables|Reference||
-||---------|-----------------|-----------||
-||**Waitpoints**|Human approval gates, external callbacks||`references/waitpoints.md`|||
-||**Streams**|Real-time progress to frontend||`references/streaming.md`|||
-||**ai.tool**|Let LLMs call your tasks as tools||`references/ai-tool.md`|||
-||**batch.triggerByTaskAndWait**|Typed parallel execution||`references/orchestration.md`|||
+| Feature | What it enables | Reference |
+|---------|-----------------|-----------|
+| **Waitpoints** | Human approval gates, external callbacks | `references/waitpoints.md` |
+| **Streams** | Real-time progress to frontend | `references/streaming.md` |
+| **ai.tool** | Let LLMs call your tasks as tools | `references/ai-tool.md` |
+| **batch.triggerByTaskAndWait** | Typed parallel execution | `references/orchestration.md` |
 
 ---
 

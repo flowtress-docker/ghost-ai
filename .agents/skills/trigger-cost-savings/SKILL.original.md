@@ -9,7 +9,7 @@ Analyze task runs and configurations to find cost reduction opportunities.
 
 ## Prerequisites: MCP Tools
 
-This skill requires **Trigger.dev MCP server** to analyze live run data.
+This skill requires the **Trigger.dev MCP server** to analyze live run data.
 
 ### Check MCP availability
 
@@ -46,7 +46,7 @@ Use the fetched content to ensure recommendations are current. If the fetch fail
 
 ### Step 1: Static Analysis (source code)
 
-Scan task files in project for these issues:
+Scan task files in the project for these issues:
 
 1. **Oversized machines** — tasks using `large-1x` or `large-2x` without clear need
 2. **Missing `maxDuration`** — tasks without execution time limits (runaway cost risk)

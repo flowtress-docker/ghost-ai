@@ -7,4 +7,4 @@ description: >
   the model itself does not compute the numbers.
 ---
 
-This skill is delivered by`hooks/caveman-stats.js` (read by`hooks/caveman-mode-tracker.js` on`/caveman-stats`). model does not need to do anything when this skill fires — hook returns`decision: "block"` with formatted stats as reason. user sees numbers immediately.
+This skill is delivered by `hooks/caveman-stats.js` (read by `hooks/caveman-mode-tracker.js` on `/caveman-stats`). The model does not need to do anything when this skill fires — the hook returns `decision: "block"` with the formatted stats as the reason. The user sees the numbers immediately.
