@@ -26,3 +26,7 @@ _Avoid_: My Projects, Shared with me
 **Owner** / **Collaborator**:
 Not used. Legacy concepts from multi-tenant auth; remove from product language and data model.
 _Avoid_: ownerId, invite, share by email, access control list
+
+**Solo team**:
+The expected usage pattern: one person (or one person at a time) drives the app. Human-to-human presence is optional, not a core feature.
+_Avoid_: Team collaboration, multiplayer (as a product promise)
