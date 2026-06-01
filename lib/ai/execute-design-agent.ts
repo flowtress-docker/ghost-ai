@@ -7,6 +7,11 @@ import {
   isRetryableModelError,
 } from "@/lib/ai/design-agent-errors";
 import { getGoogleAiApiKey } from "@/lib/env";
+import {
+  normalizeFlowStorageMaps,
+  toLiveblocksCanvasEdge,
+  toLiveblocksCanvasNode,
+} from "@/lib/liveblocks/canvas-flow-sync";
 import { ensureCanvasRoom } from "@/lib/liveblocks/ensure-canvas-room";
 import { getLiveblocks } from "@/lib/liveblocks";
 import { NODE_COLORS, SHAPE_DEFAULTS, NODE_SHAPES } from "@/types/canvas";
@@ -247,6 +252,8 @@ export async function executeDesignAgent(payload: DesignAgentPayload) {
       const nodes = flow.get("nodes");
       const edges = flow.get("edges");
 
+      normalizeFlowStorageMaps(nodes, edges);
+
       for (const call of actionCalls) {
         applyToolCall(call, nodes, edges);
       }
@@ -316,7 +323,7 @@ function applyToolCall(call: ToolCall, nodes: LiveMapLike, edges: LiveMapLike) {
         width: size.width,
         height: size.height,
       };
-      nodes.set(id, node);
+      nodes.set(id, toLiveblocksCanvasNode(node));
       break;
     }
 
@@ -394,7 +401,7 @@ function applyToolCall(call: ToolCall, nodes: LiveMapLike, edges: LiveMapLike) {
         data: { label: label ?? "" },
         markerEnd: DEFAULT_MARKER_END,
       };
-      edges.set(id, edge);
+      edges.set(id, toLiveblocksCanvasEdge(edge));
       break;
     }
 
