@@ -13,8 +13,7 @@
 <img src="https://img.shields.io/badge/-shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white" /><br/>
 
 <img src="https://img.shields.io/badge/-Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" />
-<img src="https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
-<img src="https://img.shields.io/badge/-Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" /><br/>
+<img src="https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" /><br/>
 
 <img src="https://img.shields.io/badge/Trigger.dev-22c55e?style=for-the-badge&logo=triggerdotdev&logoColor=white" />
 <img src="https://img.shields.io/badge/-Liveblocks-050505?style=for-the-badge&logo=liveblocks&logoColor=white" />
@@ -64,7 +63,7 @@ If you're getting started and need assistance or face any bugs, join our active 
 
 - **[Liveblocks](https://jsm.dev/ghost-liveblocks)** is a real-time collaboration infrastructure that enables developers to build multiplayer experiences. It provides robust APIs for presence, shared state, and text synchronization, allowing you to easily add collaborative features like cursors, whiteboard tools, and shared document editing to your apps.
 
-- **[Clerk](https://jsm.dev/ghost-clerk)** is a specialized authentication and user management platform for React and Next.js. It offers drop-in pre-built components for sign-in, sign-up, and profile management, while handling complex requirements like session management, multi-factor authentication, and organization hierarchies out of the box.
+- **Session authentication** stores users in PostgreSQL with bcrypt password hashes and issues signed HTTP-only session cookies for route protection.
 
 - **[Trigger.dev](https://jsm.dev/ghost-triggerdev)** is an open-source platform for orchestrating long-running background jobs and workflows. It allows developers to define jobs directly in their code that respond to webhooks, schedules, or events, handling retries, delays, and state management without the need for complex infrastructure.
 
@@ -92,7 +91,7 @@ If you're getting started and need assistance or face any bugs, join our active 
 
 👉 **Downloadable Specs**: Every generated spec is available via a dedicated download API route.
 
-👉 **Clerk Authentication**: Global route protection via `clerkMiddleware`; Liveblocks tokens are only issued to authenticated users.
+👉 **Built-in Authentication**: Email/password accounts in PostgreSQL with signed session cookies; route protection via `proxy.ts`; Liveblocks tokens are only issued to authenticated users.
 
 👉 **Auto-Save Canvas**: The canvas state is debounced-saved to `data/canvas/{projectId}.json` every 3 seconds of inactivity.
 
@@ -134,11 +133,8 @@ npm install
 Create a new file named `.env` in the root of your project and add the following content:
 
 ```env
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+# Auth (required — use a long random string in production)
+AUTH_SECRET=
 
 LIVEBLOCKS_SECRET_KEY=
 
@@ -159,7 +155,7 @@ GEMINI_SPEC_MODEL=
 APP_URL=http://localhost:3000
 ```
 
-Replace the placeholder values with your real credentials. You can get these by signing up at: [**Clerk**](https://jsm.dev/ghost-clerk), [**Liveblocks**](https://jsm.dev/ghost-liveblocks), [**Trigger.dev**](https://jsm.dev/ghost-triggerdev), [**Google AI Studio**](https://aistudio.google.com/).
+Replace the placeholder values with your real credentials. You can get these by Sign up at [**Liveblocks**](https://jsm.dev/ghost-liveblocks), [**Trigger.dev**](https://jsm.dev/ghost-triggerdev), and [**Google AI Studio**](https://aistudio.google.com/). Create an account via `/sign-up` — users are stored in PostgreSQL.
 
 **Running the Project**
 
@@ -200,8 +196,8 @@ npx trigger.dev@latest dev
 │   ├── api/              # Next.js API routes (auth, AI, projects, specs)
 │   ├── editor/           # Canvas editor pages
 │   ├── generated/prisma/ # Auto-generated Prisma client
-│   ├── sign-in/          # Clerk sign-in page
-│   └── sign-up/          # Clerk sign-up page
+│   ├── sign-in/          # Sign-in page
+│   └── sign-up/          # Sign-up page
 ├── components/
 │   ├── editor/           # Canvas UI components (editor, sidebar, AI chat)
 │   └── ui/               # Reusable shadcn/ui primitives
