@@ -167,6 +167,8 @@ export async function executeDesignAgent(payload: DesignAgentPayload) {
     }
     const google = createGoogleGenerativeAI({ apiKey });
 
+    await lb.getOrCreateRoom(payload.roomId, { defaultAccesses: [] });
+
     await lb
       .setPresence(payload.roomId, {
         userId: AI_USER_ID,
