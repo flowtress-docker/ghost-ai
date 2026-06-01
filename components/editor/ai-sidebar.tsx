@@ -42,6 +42,12 @@ const TERMINAL_STATUSES = [
   "ABORTED",
 ] as const
 
+/** UI safety net when Trigger run stays QUEUED (no dev worker / deploy). */
+const DESIGN_RUN_TIMEOUT_MS = 120_000
+
+const WORKER_HINT =
+  "Timed out waiting for Ghost AI. Start the Trigger.dev worker (`npx trigger.dev dev`) or deploy tasks to Trigger.dev cloud."
+
 interface SpecItem {
   id: string
   filePath: string
@@ -112,6 +118,7 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
   const chatTextareaRef = useRef<HTMLTextAreaElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const chatScrollRef = useRef<HTMLDivElement>(null)
+  const designRunFinishedRef = useRef(false)
 
   // Spec state
   const [specs, setSpecs] = useState<SpecItem[]>([])
@@ -174,13 +181,10 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
     [fetchSpecs]
   )
 
-  const handleRunTerminal = useCallback(
-    (status: string, output: unknown) => {
-      const isSuccess = status === "COMPLETED"
-      const typedOutput = output as { summary?: string } | undefined
-      const content = isSuccess
-        ? (typedOutput?.summary ?? "Design applied to canvas.")
-        : "Ghost AI encountered an error. Please try again."
+  const finalizeDesignRun = useCallback(
+    (success: boolean, content: string) => {
+      if (designRunFinishedRef.current) return
+      designRunFinishedRef.current = true
 
       createFeedMessage(CHAT_FEED_ID, {
         sender: "Ghost AI",
@@ -191,7 +195,7 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
 
       createFeedMessage(FEED_ID, {
         text: content,
-        status: isSuccess ? "complete" : "error",
+        status: success ? "complete" : "error",
       }).catch(() => {})
 
       setIsLoading(false)
@@ -201,6 +205,20 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
       updateMyPresence({ thinking: false })
     },
     [createFeedMessage, updateMyPresence]
+  )
+
+  const handleRunTerminal = useCallback(
+    (status: string, output: unknown) => {
+      const isSuccess = status === "COMPLETED"
+      const typedOutput = output as { summary?: string } | undefined
+      const content = isSuccess
+        ? (typedOutput?.summary ?? "Design applied to canvas.")
+        : status === "TIMED_OUT"
+          ? WORKER_HINT
+          : "Ghost AI encountered an error. Please try again."
+      finalizeDesignRun(isSuccess, content)
+    },
+    [finalizeDesignRun]
   )
 
   // Latest validated feed message for the status strip fallback
@@ -256,11 +274,25 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
     }
   }, [isSpecGenerating, roomId, nodesArray, edgesArray, validatedChatMessages])
 
-  // Receive broadcast status events for real-time strip text
+  // Receive broadcast status events for real-time strip text and completion
   useEventListener(({ event }) => {
     if (event.type !== "ai-status") return
     setStatusText(event.message)
+    if (event.status === "complete") {
+      finalizeDesignRun(true, event.message)
+    } else if (event.status === "error") {
+      finalizeDesignRun(false, event.message)
+    }
   })
+
+  // Unblock UI if Trigger run never leaves QUEUED (no worker / not deployed)
+  useEffect(() => {
+    if (!isLoading) return
+    const timer = window.setTimeout(() => {
+      finalizeDesignRun(false, WORKER_HINT)
+    }, DESIGN_RUN_TIMEOUT_MS)
+    return () => window.clearTimeout(timer)
+  }, [isLoading, finalizeDesignRun])
 
   // Scroll both tabs to bottom when messages update
   useEffect(() => {
@@ -284,6 +316,7 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
     if (!text || isLoading) return
 
     setInput("")
+    designRunFinishedRef.current = false
     setIsLoading(true)
     updateMyPresence({ thinking: true })
 
@@ -331,23 +364,9 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
       setRunId(newRunId)
       setPublicToken(token)
     } catch {
-      createFeedMessage(CHAT_FEED_ID, {
-        sender: "Ghost AI",
-        role: "assistant",
-        content: "Failed to reach Ghost AI. Please try again.",
-        timestamp: new Date().toISOString(),
-      }).catch(() => {})
-
-      createFeedMessage(FEED_ID, {
-        text: "Ghost AI encountered an error.",
-        status: "error",
-      }).catch(() => {})
-
-      setIsLoading(false)
-      setStatusText("")
-      updateMyPresence({ thinking: false })
+      finalizeDesignRun(false, "Failed to reach Ghost AI. Please try again.")
     }
-  }, [input, isLoading, roomId, projectId, updateMyPresence, createFeedMessage, self])
+  }, [input, isLoading, roomId, projectId, updateMyPresence, createFeedMessage, self, finalizeDesignRun])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

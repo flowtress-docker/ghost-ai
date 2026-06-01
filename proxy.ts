@@ -1,7 +1,5 @@
-import type { NextRequest } from "next/server"
-
 /** No auth — internal solo tool; proxy exists for Next.js 16 routing only. */
-export function proxy(_request: NextRequest) {}
+export function proxy() {}
 
 export const config = {
   matcher: [
