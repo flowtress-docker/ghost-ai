@@ -1,18 +1,44 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { getSessionFromRequest } from "@/lib/auth/session"
 
-const signInUrl = process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? "/sign-in"
-const signUpUrl = process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL ?? "/sign-up"
+const PUBLIC_PATHS = [
+  "/sign-in",
+  "/sign-up",
+  "/api/auth/sign-in",
+  "/api/auth/sign-up",
+]
 
-const isPublicRoute = createRouteMatcher([
-  `${signInUrl}(.*)`,
-  `${signUpUrl}(.*)`,
-])
+function isPublicPath(pathname: string) {
+  return PUBLIC_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  )
+}
 
-export const proxy = clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
-    await auth.protect()
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  if (isPublicPath(pathname)) {
+    return NextResponse.next()
   }
-})
+
+  const session = await getSessionFromRequest(request)
+
+  if (!session) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const signInUrl = new URL("/sign-in", request.url)
+    signInUrl.searchParams.set(
+      "redirect_url",
+      `${pathname}${request.nextUrl.search}`
+    )
+    return NextResponse.redirect(signInUrl)
+  }
+
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [

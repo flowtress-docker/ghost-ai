@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server"
+import { getAuthUserId } from "@/lib/auth/session"
 import { prisma } from "@/lib/prisma"
 import type { NextRequest } from "next/server"
 
@@ -6,7 +6,7 @@ export async function PATCH(
   request: NextRequest,
   ctx: RouteContext<"/api/projects/[projectId]">
 ) {
-  const { userId } = await auth()
+  const userId = await getAuthUserId()
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 })
 
   const { projectId } = await ctx.params
@@ -35,7 +35,7 @@ export async function DELETE(
   _request: NextRequest,
   ctx: RouteContext<"/api/projects/[projectId]">
 ) {
-  const { userId } = await auth()
+  const userId = await getAuthUserId()
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 })
 
   const { projectId } = await ctx.params
