@@ -31,6 +31,12 @@
       "skillPath": "skills/core/clerk-setup/SKILL.md",
       "computedHash": "40670b1b6e109fa1a3b2d9e111642ec920409d4b3bb9afadb58b7d2f5f1019a6"
     },
+    "grill-with-docs": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+      "computedHash": "eb0e91e84277283dc2b23ed544399e53afd6b5287e5b6929f25fe8aa608e164b"
+    },
     "liveblocks-best-practices": {
       "source": "liveblocks/skills",
       "sourceType": "github",
