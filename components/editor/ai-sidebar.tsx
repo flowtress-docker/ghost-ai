@@ -42,6 +42,8 @@ const TERMINAL_STATUSES = [
   "ABORTED",
 ] as const
 
+const RUN_WAIT_TIMEOUT_MS = 180_000
+
 interface SpecItem {
   id: string
   filePath: string
@@ -74,11 +76,21 @@ function RunTracker({ runId, publicToken, onTerminal }: RunTrackerProps) {
   const firedRef = useRef(false)
 
   useEffect(() => {
+    if (!runId) return
+    const timeout = setTimeout(() => {
+      if (firedRef.current) return
+      firedRef.current = true
+      onTerminal("TIMED_OUT", undefined)
+    }, RUN_WAIT_TIMEOUT_MS)
+    return () => clearTimeout(timeout)
+  }, [runId, onTerminal])
+
+  useEffect(() => {
     if (!run || firedRef.current) return
     if (!(TERMINAL_STATUSES as readonly string[]).includes(run.status)) return
     firedRef.current = true
     onTerminal(run.status, run.output)
-  }, [run?.status, run?.id, onTerminal])
+  }, [run?.status, run?.id, run?.output, onTerminal, run])
 
   return null
 }
@@ -112,6 +124,7 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
   const chatTextareaRef = useRef<HTMLTextAreaElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const chatScrollRef = useRef<HTMLDivElement>(null)
+  const inlineRunRef = useRef(false)
 
   // Spec state
   const [specs, setSpecs] = useState<SpecItem[]>([])
@@ -180,7 +193,9 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
       const typedOutput = output as { summary?: string } | undefined
       const content = isSuccess
         ? (typedOutput?.summary ?? "Design applied to canvas.")
-        : "Ghost AI encountered an error. Please try again."
+        : status === "TIMED_OUT"
+          ? "Ghost AI timed out waiting for the background worker. In dev, inline mode runs automatically; otherwise start npm run dev:trigger after Trigger.dev CLI login."
+          : "Ghost AI encountered an error. Please try again."
 
       createFeedMessage(CHAT_FEED_ID, {
         sender: "Ghost AI",
@@ -256,10 +271,33 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
     }
   }, [isSpecGenerating, roomId, nodesArray, edgesArray, validatedChatMessages])
 
-  // Receive broadcast status events for real-time strip text
+  // Liveblocks ai-status events complete inline dev runs and clear loading state
   useEventListener(({ event }) => {
     if (event.type !== "ai-status") return
     setStatusText(event.message)
+    if (event.status === "complete" || event.status === "error") {
+      if (inlineRunRef.current) {
+        createFeedMessage(CHAT_FEED_ID, {
+          sender: "Ghost AI",
+          role: "assistant",
+          content: event.message,
+          timestamp: new Date().toISOString(),
+        }).catch(() => {})
+
+        createFeedMessage(FEED_ID, {
+          text: event.message,
+          status: event.status === "complete" ? "complete" : "error",
+        }).catch(() => {})
+
+        inlineRunRef.current = false
+      }
+
+      setIsLoading(false)
+      setStatusText("")
+      setRunId(null)
+      setPublicToken(null)
+      updateMyPresence({ thinking: false })
+    }
   })
 
   // Scroll both tabs to bottom when messages update
@@ -316,7 +354,18 @@ export function AiSidebar({ isOpen, onClose, roomId, projectId }: AiSidebarProps
 
       if (!designRes.ok) throw new Error("Design request failed")
 
-      const { runId: newRunId } = (await designRes.json()) as { runId: string }
+      const designData = (await designRes.json()) as {
+        runId: string
+        inline?: boolean
+      }
+
+      if (designData.inline) {
+        inlineRunRef.current = true
+        return
+      }
+
+      inlineRunRef.current = false
+      const newRunId = designData.runId
 
       const tokenRes = await fetch("/api/ai/design/token", {
         method: "POST",

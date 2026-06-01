@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server"
+import { getAuthUserId } from "@/lib/auth/session"
 import {
   getProjectShareDetails,
   isValidCollaboratorEmail,
@@ -41,7 +41,7 @@ export async function POST(
   request: Request,
   ctx: RouteContext<"/api/projects/[projectId]/collaborators">
 ) {
-  const { userId } = await auth()
+  const userId = await getAuthUserId()
 
   if (!userId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 })
@@ -107,7 +107,7 @@ export async function DELETE(
   request: Request,
   ctx: RouteContext<"/api/projects/[projectId]/collaborators">
 ) {
-  const { userId } = await auth()
+  const userId = await getAuthUserId()
 
   if (!userId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 })

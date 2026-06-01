@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server"
+import { getSession } from "@/lib/auth/session"
 import { prisma } from "@/lib/prisma"
 
 export interface ProjectIdentity {
@@ -7,21 +7,18 @@ export interface ProjectIdentity {
 }
 
 export async function getCurrentProjectIdentity(): Promise<ProjectIdentity> {
-  const { userId } = await auth()
+  const session = await getSession()
 
-  if (!userId) {
+  if (!session) {
     return {
       userId: null,
       primaryEmailAddress: null,
     }
   }
 
-  const user = await currentUser()
-
   return {
-    userId,
-    primaryEmailAddress:
-      user?.primaryEmailAddress?.emailAddress?.trim().toLowerCase() ?? null,
+    userId: session.userId,
+    primaryEmailAddress: session.email,
   }
 }
 

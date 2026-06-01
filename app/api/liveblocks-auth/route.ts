@@ -1,5 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { getLiveblocks, getUserColor } from "@/lib/liveblocks";
+import { getUserById } from "@/lib/auth/users";
+import {
+  getLiveblocks,
+  getLiveblocksConfigError,
+  getUserColor,
+} from "@/lib/liveblocks";
+import { ensureNormalizedCanvasRoom } from "@/lib/liveblocks/ensure-canvas-room";
 import {
   getCurrentProjectIdentity,
   userHasProjectAccess,
@@ -12,7 +17,19 @@ export async function POST(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { room } = await request.json();
+  const configError = getLiveblocksConfigError();
+  if (configError) {
+    console.error("[liveblocks-auth]", configError);
+    return Response.json({ error: configError }, { status: 503 });
+  }
+
+  let room: string;
+  try {
+    const body = await request.json();
+    room = body?.room;
+  } catch {
+    return new Response("Bad Request", { status: 400 });
+  }
 
   if (!room || typeof room !== "string") {
     return new Response("Bad Request", { status: 400 });
@@ -24,24 +41,28 @@ export async function POST(request: Request) {
     return new Response("Forbidden", { status: 403 });
   }
 
-  const lb = getLiveblocks();
+  try {
+    const lb = getLiveblocks();
 
-  await lb.getOrCreateRoom(room, { defaultAccesses: [] });
+    await ensureNormalizedCanvasRoom(lb, room);
 
-  const user = await currentUser();
-  const name =
-    user?.fullName ??
-    user?.primaryEmailAddress?.emailAddress ??
-    "Anonymous";
-  const avatar = user?.imageUrl ?? "";
-  const color = getUserColor(identity.userId);
+    const user = await getUserById(identity.userId);
+    const name = user?.name ?? user?.email ?? "Anonymous";
+    const avatar = user?.avatarUrl ?? "";
+    const color = getUserColor(identity.userId);
 
-  const session = lb.prepareSession(identity.userId, {
-    userInfo: { name, avatar, color },
-  });
+    const session = lb.prepareSession(identity.userId, {
+      userInfo: { name, avatar, color },
+    });
 
-  session.allow(room, session.FULL_ACCESS);
+    session.allow(room, session.FULL_ACCESS);
 
-  const { status, body } = await session.authorize();
-  return new Response(body, { status });
+    const { status, body } = await session.authorize();
+    return new Response(body, { status });
+  } catch (error) {
+    console.error("[liveblocks-auth]", error);
+    const message =
+      error instanceof Error ? error.message : "Liveblocks authentication failed";
+    return Response.json({ error: message }, { status: 500 });
+  }
 }

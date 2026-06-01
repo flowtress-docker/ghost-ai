@@ -20,3 +20,61 @@ Read the following files in order before implementing or making any architectura
 Update `context/progress-tracker.md` after each meaningful implementation change.
 
 If implementation changes the architecture, scope, or standards documented in the context files, update the relevant file before continuing.
+
+## Cursor Cloud specific instructions
+
+Ghost AI is a Next.js 16 app (`npm run dev`, port 3000) with PostgreSQL (Prisma), session auth, Liveblocks canvas, Trigger.dev background tasks, and **local filesystem** artifact storage (`data/canvas/`, `data/specs/`). No Clerk or Vercel Blob — do **not** configure `BLOB_READ_WRITE_TOKEN`.
+
+### Cursor secrets
+
+Configure these in Cursor project secrets (not Vercel Blob):
+
+| Secret | Purpose |
+|--------|---------|
+| `LIVEBLOCKS_SECRET_KEY` | Realtime canvas collaboration |
+| `TRIGGER_SECRET_KEY` | Trigger.dev dev worker auth |
+| `TRIGGER_PROJECT_REF` | Trigger.dev project ref (`proj_…`) |
+| `GOOGLE_AI_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini in Trigger tasks |
+
+On startup, `node scripts/sync-env-local.mjs` merges injected secrets into `.env.local`. `npm run dev` runs this automatically.
+
+### Services
+
+| Service | Command | Required? |
+|---------|---------|-----------|
+| Next.js | `npm run dev` | Yes |
+| PostgreSQL | `sudo pg_ctlcluster 16 main start` | Yes |
+| Trigger.dev worker | `npx trigger.dev@latest dev` | Only for AI tasks |
+
+### Minimum `.env.local` (no external secrets)
+
+```env
+DATABASE_URL=postgresql://ghost:ghost@localhost:5432/ghost_ai
+AUTH_SECRET=any-long-random-string-for-dev
+```
+
+Create accounts at `/sign-up`. Works without Liveblocks, Trigger.dev, or Gemini keys.
+
+### Optional secrets (skipped = degraded mode)
+
+| Secret | Without it |
+|--------|------------|
+| `LIVEBLOCKS_SECRET_KEY` | Canvas stuck on "Connecting to room…" (`/api/liveblocks-auth` fails) |
+| `TRIGGER_SECRET_KEY` + `TRIGGER_PROJECT_REF` | AI design/spec tasks don't run |
+| `GOOGLE_AI_API_KEY` | Gemini calls fail inside Trigger tasks |
+
+### Lint / build / test
+
+- **Lint (source only):** `npx eslint app components hooks lib trigger types proxy.ts liveblocks.config.ts --max-warnings 0`
+- **Build:** `npm run build` (needs `DATABASE_URL` + `AUTH_SECRET`)
+- **No automated test suite**
+
+### Gotchas
+
+- PostgreSQL does **not** auto-start on boot — run `sudo pg_ctlcluster 16 main start` first.
+- Run `npx prisma migrate deploy` after Postgres start on a fresh VM.
+- Canvas autosave writes to `data/canvas/{projectId}.json` (no cloud storage).
+- Long-running dev servers: tmux session `next-dev-server`.
+- **Ghost AI (dev):** `/api/ai/design` runs inline via `after()` when `NODE_ENV=development` and `TRIGGER_DEV_WORKER` is not `true`. If all Gemini models are at capacity, the sidebar shows a specific busy message — wait ~1 minute and retry. Optional override: set `GEMINI_MODEL` in secrets.
+- **Liveblocks WebSocket 1006:** A single `Connection to Liveblocks websocket server closed (code: 1006). Retrying…` log is usually a transient reconnect (Liveblocks auto-retries). Common triggers: server-side storage updates during Ghost AI runs, or normalizing canvas storage. Canvas normalization now runs in `/api/liveblocks-auth` before the WebSocket opens to reduce this. If it loops forever, check `LIVEBLOCKS_SECRET_KEY` and the auth endpoint response.
+- **Ghost AI canvas writes:** Server-side nodes must use `LiveObject.from` with the same sync config as `@liveblocks/react-flow` (see `lib/liveblocks/canvas-flow-sync.ts`). Plain JSON nodes break React Flow (`node.setLocal is not a function`); `useNormalizeCanvasFlowStorage` re-wraps legacy nodes on editor load.

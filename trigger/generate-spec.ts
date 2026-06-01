@@ -2,8 +2,8 @@ import { schemaTask, metadata, logger } from "@trigger.dev/sdk/v3"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { generateText } from "ai"
 import { z } from "zod"
-import { put } from "@vercel/blob"
 import { prisma } from "@/lib/prisma"
+import { getSpecRelativePath, writeArtifact } from "@/lib/artifact-storage"
 
 const chatMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -98,7 +98,13 @@ export const generateSpec = schemaTask({
   schema: payloadSchema,
   retry: { maxAttempts: 2, minTimeoutInMs: 1000, maxTimeoutInMs: 10000, factor: 2 },
   run: async (payload) => {
-    const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_AI_API_KEY })
+    const apiKey =
+      process.env.GOOGLE_AI_API_KEY?.trim() ||
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim()
+    if (!apiKey) {
+      throw new Error("GOOGLE_AI_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY is required")
+    }
+    const google = createGoogleGenerativeAI({ apiKey })
 
     metadata.set("status", "starting")
     logger.info("Generating spec", {
@@ -121,21 +127,14 @@ export const generateSpec = schemaTask({
 
     metadata.set("status", "uploading")
 
-    const blob = await put(
-      `specs/${payload.projectId}/${Date.now()}.md`,
-      spec,
-      {
-        access: "private",
-        contentType: "text/markdown",
-        addRandomSuffix: false,
-        allowOverwrite: true,
-      }
-    )
+    const filename = `${Date.now()}.md`
+    const relativePath = getSpecRelativePath(payload.projectId, filename)
+    await writeArtifact(relativePath, spec)
 
     const record = await prisma.projectSpec.create({
       data: {
         projectId: payload.projectId,
-        filePath: blob.url,
+        filePath: relativePath,
       },
     })
 
