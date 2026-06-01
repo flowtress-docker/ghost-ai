@@ -31,7 +31,7 @@
 
 ## Auth and Collaboration Model
 
-- Every project has a single owner (Clerk user ID).
+- Every project has a single owner (User ID).
 - Projects can include additional collaborators.
 - Only authenticated users can access protected routes.
 - Only the owner or a collaborator can mutate project resources.
