@@ -11,9 +11,9 @@ metadata:
 
 # Adding Clerk
 
-> **Version**: Check `package.json` for the SDK version — see `clerk` skill for the version table. Core 2 differences are noted inline with `> **Core 2 ONLY (skip if current SDK):**` callouts.
+> **Version**: Check `package.json` for SDK version — see `clerk` skill for version table. Core 2 differences are noted inline with `> **Core 2 ONLY (skip if current SDK):**` callouts.
 
-This skill sets up Clerk for authentication by following the official quickstart documentation.
+This skill sets up Clerk for authentication by following official quickstart documentation.
 
 ## Quick Reference
 
@@ -24,11 +24,11 @@ This skill sets up Clerk for authentication by following the official quickstart
 | 3. Follow instructions | Execute steps; create `proxy.ts` (Next.js <=15: `middleware.ts`) |
 | 4. Get API keys | From [dashboard.clerk.com](https://dashboard.clerk.com/last-active?path=api-keys) |
 
-> If the project has `components.json` (shadcn/ui), apply the shadcn theme after setup. See `clerk-custom-ui` skill → shadcn Theme.
+> If project has `components.json` (shadcn/ui), apply shadcn theme after setup. See `clerk-custom-ui` skill → shadcn Theme.
 
 ## Framework Detection
 
-Check `package.json` to identify the framework:
+Check `package.json` to identify framework:
 
 | Dependency | Framework | Quickstart URL |
 |------------|-----------|----------------|
@@ -66,34 +66,32 @@ User Request: "Add Clerk" / "Add authentication"
     │
     └─ components.json exists? → YES → Apply shadcn theme (see clerk-custom-ui)
 ```
-
 ## Setup Process
 
 ### 1. Detect the Framework
 
-Read the project's `package.json` and match dependencies to the table above.
+Read project's `package.json` and match dependencies to table above.
 
 ### 2. Fetch the Quickstart Guide
 
-Use WebFetch to retrieve the official quickstart for the detected framework:
+Use WebFetch to retrieve official quickstart for detected framework:
 
 ```
 WebFetch: https://clerk.com/docs/{framework}/getting-started/quickstart
 Prompt: "Extract the complete setup instructions including all code snippets, file paths, and configuration steps."
 ```
-
 ### 3. Follow the Instructions
 
-Execute each step from the quickstart guide:
-- Install the required packages
+Execute each step from quickstart guide:
+- Install required packages
 - Set up environment variables
-- Add the provider and proxy/middleware
+- Add provider and proxy/middleware
 - Create sign-in/sign-up routes if needed
-- Test the integration
+- Test integration
 
-> **Next.js:** Create `proxy.ts` (Next.js <=15: `middleware.ts`). See the `clerk-nextjs-patterns` skill for middleware strategies.
+> **Next.js:** Create `proxy.ts` (Next.js <=15: `middleware.ts`). See `clerk-nextjs-patterns` skill for middleware strategies.
 
-> **shadcn/ui detected** (`components.json` exists): ALWAYS apply the shadcn theme. See `clerk-custom-ui` skill → shadcn Theme section.
+> **shadcn/ui detected** (`components.json` exists): ALWAYS apply shadcn theme. See `clerk-custom-ui` skill → shadcn Theme section.
 
 ### 4. Get API Keys
 
@@ -112,7 +110,7 @@ Two paths for development API keys:
 
 ## Migrating from Another Auth Provider
 
-If the project already has authentication, create a migration plan before replacing it.
+If project already has authentication, create migration plan before replacing it.
 
 ### Detect Existing Auth
 
@@ -178,17 +176,15 @@ export default function RootLayout({ children }) {
   )
 }
 ```
-
 > **Core 2 ONLY (skip if current SDK):** `ClerkProvider` can wrap `<html>` directly.
 
 ### Dynamic Rendering (Next.js)
 
-For dynamic rendering with auth data, use the `dynamic` prop:
+For dynamic rendering with auth data, use `dynamic` prop:
 
 ```tsx
 <ClerkProvider dynamic>{children}</ClerkProvider>
 ```
-
 ### Node.js Requirement
 
 Requires **Node.js 20.9.0** or higher.
@@ -202,29 +198,25 @@ Themes are installed from `@clerk/ui`:
 ```bash
 npm install @clerk/ui
 ```
-
 > **Core 2 ONLY (skip if current SDK):** Themes are from `@clerk/themes` instead of `@clerk/ui`.
 
 ### shadcn Theme
 
-If the project uses shadcn/ui (check for `components.json` in the project root), apply the shadcn theme so Clerk components match the app's design system:
+If project uses shadcn/ui (check for `components.json` in project root), apply shadcn theme so Clerk components match app's design system:
 
 ```bash
 npm install @clerk/ui
 ```
-
 ```tsx
 import { shadcn } from '@clerk/ui/themes'
 
 <ClerkProvider appearance={{ theme: shadcn }}>{children}</ClerkProvider>
 ```
-
-Also import the shadcn CSS in your global styles:
+Also import shadcn CSS in your global styles:
 ```css
 @import 'tailwindcss';
 @import '@clerk/ui/themes/shadcn.css';
 ```
-
 > **Core 2 ONLY (skip if current SDK):** Import from `@clerk/themes` and `@clerk/themes/shadcn.css` instead.
 
 ## Common Pitfalls

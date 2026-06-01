@@ -9,7 +9,7 @@ Get Trigger.dev running in your project in minutes.
 
 ## When to Use
 
-- Adding Trigger.dev to an existing project
+- Adding Trigger.dev to existing project
 - Creating your first task
 - Setting up trigger.config.ts
 - Connecting to Trigger.dev cloud
@@ -17,7 +17,7 @@ Get Trigger.dev running in your project in minutes.
 ## Prerequisites
 
 - Node.js 18+ or Bun
-- A Trigger.dev account (https://cloud.trigger.dev)
+- Trigger.dev account (https://cloud.trigger.dev)
 
 ## Quick Start
 
@@ -36,7 +36,7 @@ npx trigger init
 This creates:
 - `trigger.config.ts` - project configuration
 - `trigger/` directory - where your tasks live
-- `trigger/example.ts` - a sample task
+- `trigger/example.ts` - sample task
 
 ### 3. Configure trigger.config.ts
 
@@ -83,7 +83,7 @@ await tasks.trigger<typeof myFirstTask>("my-first-task", {
 });
 ```
 
-Or from the Trigger.dev dashboard "Test" tab.
+Or from Trigger.dev dashboard "Test" tab.
 
 ## Project Structure
 
@@ -99,7 +99,7 @@ your-project/
 
 ## Environment Variables
 
-Create `.env` or set in your environment:
+Create`.env` or set in your environment:
 
 ```bash
 TRIGGER_SECRET_KEY=tr_dev_xxxxx  # From dashboard > API Keys
@@ -108,16 +108,16 @@ TRIGGER_SECRET_KEY=tr_dev_xxxxx  # From dashboard > API Keys
 ## Common Issues
 
 ### "No tasks found"
-- Ensure tasks are **exported** from files in `dirs` folders
-- Check `trigger.config.ts` points to correct directories
+- Ensure tasks are **exported** from files in`dirs` folders
+- Check`trigger.config.ts` points to correct directories
 
 ### "Project not found"
-- Verify `project` in config matches dashboard
-- Check `TRIGGER_SECRET_KEY` is set
+- Verify`project` in config matches dashboard
+- Check`TRIGGER_SECRET_KEY` is set
 
 ### "Task not registered"
-- Restart `npx trigger dev` after adding new tasks
-- Tasks must use `task()` or `schemaTask()` from `@trigger.dev/sdk`
+- Restart`npx trigger dev` after adding new tasks
+- Tasks must use`task()` or`schemaTask()` from`@trigger.dev/sdk`
 
 ## Next Steps
 

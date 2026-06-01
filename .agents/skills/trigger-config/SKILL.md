@@ -5,11 +5,11 @@ description: Configure Trigger.dev projects with trigger.config.ts. Use when set
 
 # Trigger.dev Configuration
 
-Configure your Trigger.dev project with `trigger.config.ts` and build extensions.
+Configure your Trigger.dev project with`trigger.config.ts` and build extensions.
 
 ## When to Use
 
-- Setting up a new Trigger.dev project
+- Setting up new Trigger.dev project
 - Adding database support (Prisma, TypeORM)
 - Configuring browser automation (Playwright, Puppeteer)
 - Adding media processing (FFmpeg)
@@ -231,10 +231,10 @@ export default defineConfig({
 ## Best Practices
 
 1. **Pin versions** for reproducible builds
-2. **Use `syncEnvVars`** for dynamic secrets
-3. **Add native modules** to `build.external` array
-4. **Debug with** `--log-level debug --dry-run`
+2. **Use`syncEnvVars`** for dynamic secrets
+3. **Add native modules** to`build.external` array
+4. **Debug with**`--log-level debug --dry-run`
 
 Extensions only affect deployment, not local development.
 
-See `references/config.md` for complete documentation.
+See`references/config.md` for complete documentation.
