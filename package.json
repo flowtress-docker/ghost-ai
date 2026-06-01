@@ -21,7 +21,6 @@
     "@prisma/client": "^7.8.0",
     "@trigger.dev/react-hooks": "^4.4.4",
     "@trigger.dev/sdk": "^4.4.4",
-    "@vercel/blob": "^2.3.3",
     "@xyflow/react": "^12.10.2",
     "ai": "^6.0.170",
     "bcryptjs": "^3.0.2",

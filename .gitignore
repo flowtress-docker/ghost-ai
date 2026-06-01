@@ -42,5 +42,11 @@ next-env.d.ts
 
 /app/generated/prisma
 
+# Local artifact storage (canvas JSON + generated specs)
+/data/canvas/*
+/data/specs/*
+!/data/canvas/.gitkeep
+!/data/specs/.gitkeep
+
 # clerk configuration (legacy — no longer used)
 /.clerk/
