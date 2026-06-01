@@ -158,7 +158,13 @@ export const designAgent = task({
   retry: { maxAttempts: 2 },
   run: async (payload: { prompt: string; roomId: string; userId: string }) => {
     const lb = getLiveblocks();
-    const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_AI_API_KEY });
+    const apiKey =
+      process.env.GOOGLE_AI_API_KEY?.trim() ||
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
+    if (!apiKey) {
+      throw new Error("GOOGLE_AI_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY is required");
+    }
+    const google = createGoogleGenerativeAI({ apiKey });
 
     await lb
       .setPresence(payload.roomId, {

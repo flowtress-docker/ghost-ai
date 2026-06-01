@@ -98,7 +98,13 @@ export const generateSpec = schemaTask({
   schema: payloadSchema,
   retry: { maxAttempts: 2, minTimeoutInMs: 1000, maxTimeoutInMs: 10000, factor: 2 },
   run: async (payload) => {
-    const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_AI_API_KEY })
+    const apiKey =
+      process.env.GOOGLE_AI_API_KEY?.trim() ||
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim()
+    if (!apiKey) {
+      throw new Error("GOOGLE_AI_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY is required")
+    }
+    const google = createGoogleGenerativeAI({ apiKey })
 
     metadata.set("status", "starting")
     logger.info("Generating spec", {

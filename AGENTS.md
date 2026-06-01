@@ -23,7 +23,20 @@ If implementation changes the architecture, scope, or standards documented in th
 
 ## Cursor Cloud specific instructions
 
-Ghost AI is a Next.js 16 app (`npm run dev`, port 3000) with PostgreSQL (Prisma), session auth, Liveblocks canvas, Trigger.dev background tasks, and **local filesystem** artifact storage (`data/canvas/`, `data/specs/`). No Clerk or Vercel Blob.
+Ghost AI is a Next.js 16 app (`npm run dev`, port 3000) with PostgreSQL (Prisma), session auth, Liveblocks canvas, Trigger.dev background tasks, and **local filesystem** artifact storage (`data/canvas/`, `data/specs/`). No Clerk or Vercel Blob — do **not** configure `BLOB_READ_WRITE_TOKEN`.
+
+### Cursor secrets
+
+Configure these in Cursor project secrets (not Vercel Blob):
+
+| Secret | Purpose |
+|--------|---------|
+| `LIVEBLOCKS_SECRET_KEY` | Realtime canvas collaboration |
+| `TRIGGER_SECRET_KEY` | Trigger.dev dev worker auth |
+| `TRIGGER_PROJECT_REF` | Trigger.dev project ref (`proj_…`) |
+| `GOOGLE_AI_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini in Trigger tasks |
+
+On startup, `node scripts/sync-env-local.mjs` merges injected secrets into `.env.local`. `npm run dev` runs this automatically.
 
 ### Services
 
